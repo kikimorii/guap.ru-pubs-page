@@ -8,18 +8,16 @@
       - [Система отступов и границ](#система-отступов-и-границ)
       - [Брейкпоинты](#брейкпоинты)
    - [Типографика](#типографика)
-   - [Сетка страницы](#сетка-страницы) !!!
 - [Компоненты](#компоненты)
-   - [Хлебные крошки](#хлебные-крошки)
-   - [Кнопки](#кнопки)
-   - [Ссылки](#ссылки)
-   - [Шапка](#шапка)
-      - [Desktop меню](#desktop-меню)
-      - [Mobile меню](#mobile-меню)
-   - [Подвал](#подвал)
-- [Скрипты](#скрипты)
-   - [Меню шапки](#меню)
+   - [Дата](#дата)
+   - [Кнопки поделиться](#кнопки-поделиться)
+   - [Детали мероприятия](#детали-мероприятия)
    - [Галерея](#галерея)
+   - [Текст](#текст)
+   - [Теги](#теги)
+   - [Шапка](#шапка)
+      - [Desktop-меню](#desktop-меню)
+      - [Mobile-меню](#mobile-меню)
 
 ## Общее
 ### Сброс стилей
@@ -174,3 +172,200 @@ $h1-font-size: 2.25em;   // desktop 45px mobile 36px
 ```
 
 ### Детали мероприятия
+Стилизация: `kit/components/_event-datails.scss`
+```html
+<div class="event-dateils">
+   <p class="event-dateils_time">11:00</p>
+   <p class="event-dateils_location">Якубовича 26, актовый зал</p>
+</div>
+<div class="event-registration">
+   <a class="event-registration_button" href="#">
+       Регистрация
+       <small>до 14 июля</small>
+   </a>
+   <small>Регистрация обязательна</small>
+</div>
+```
+### Галерея
+Для галереи используется библиотека [blueimp](https://blueimp.github.io/Gallery/), использующая несколько вспомогательных элементов на странице для отображения. <br>
+Для функционирования самой галереи, отображения кнопок переходов по фотографиям.
+```html
+    <link rel="stylesheet" href="blueimp-gallery/css/blueimp-gallery.css">
+    <link rel="stylesheet" href="blueimp-gallery/css/blueimp-gallery-indicator.css">
+```
+```html
+<div id="blueimp-gallery"
+        class="blueimp-gallery blueimp-gallery-svgasimg blueimp-gallery-smil blueimp-gallery-display blueimp-gallery-controls"
+        aria-label="image gallery" aria-modal="true" role="dialog" style="display: none;">
+        <div class="slides" aria-live="polite"></div>
+        <h3 class="title"></h3>
+        <a class="prev" aria-controls="blueimp-gallery" aria-label="previous slide" aria-keyshortcuts="ArrowLeft"></a>
+        <a class="next" aria-controls="blueimp-gallery" aria-label="next slide" aria-keyshortcuts="ArrowRight"></a>
+        <a class="close" aria-controls="blueimp-gallery" aria-label="close" aria-keyshortcuts="Escape"></a>
+        <a class="play-pause" aria-controls="blueimp-gallery" aria-label="play slideshow" aria-keyshortcuts="Space"
+            aria-pressed="false" role="button"></a>
+        <ol class="indicator"></ol>
+    </div>
+```
+Функциональная часть библиотеки. Для её работы необходим jQuery, а также несколько строчек для того, чтобы привязать к определённому списку фотографий. В данном случае `id="gallery"`.<br>
+Кроме этого написан скрипт, который будет скрывать список фотографий, в случае, если в медиатеке всего одна фотография. Если ссылок на фотографии внутри этого списка нет, то списка не будет.
+```html
+<!-- Gallery -->
+ <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+ <script src="blueimp-gallery/js/blueimp-gallery.js"></script>
+ <script src="blueimp-gallery/js/blueimp-gallery-indicator.js"></script>
+ <script>
+     document.getElementById('gallery').onclick = function (event) {
+         event = event || window.event
+         var target = event.target || event.srcElement
+         var link = target.src ? target.parentNode : target
+         var options = { index: link, event: event }
+         var links = this.getElementsByTagName('a')
+         blueimp.Gallery(links, options)
+     }
+ </script>
+ <script>
+     document.getElementById('gallery').onclick = function (event) {
+         event = event || window.event
+         var target = event.target || event.srcElement
+         var link = target.src ? target.parentNode : target
+         var options = { index: link, event: event }
+         var links = this.getElementsByTagName('a')
+         blueimp.Gallery(links, options)
+     }
+     document.addEventListener("DOMContentLoaded", function () {
+         const galleryItems = document.querySelectorAll(".gallery-items li");
+         let hasLinks = false;
+
+         galleryItems.forEach(item => {
+             const link = item.querySelector("a");
+             if (link) {
+                 hasLinks = true;
+             }
+         });
+
+         if (!hasLinks) {
+             document.querySelector(".gallery-items").style.display = "none";
+         }
+     });
+ </script>
+ <!-- /Gallery -->
+```
+Поскольку медиатека GUAP позволяет получать на выходе фотографии в разных разрешениях, то для оптимизации страницы, можно отрисовывать фотографии, обращаясь к медиатеки с `s=xxl`, на выходе будет квадратная фотография, а ссылаться на `s=xl`, чтобы фотография была наилучшего качества. <br>
+Шаблон галерии:
+```html
+<div id="gallery" class="gallery">
+   <a href="https://media.guap.ru/ {mediaCatalog} /_title.jpg?s=xl" title="{gallery.number.name}">
+      <img src="https://media.guap.ru/ {mediaCatalog} /_title.jpg?s=xl" class="gallery gallery-first" alt="{gallery.number.name}">
+   </a>
+   <ul class="gallery-list">
+      <li><a href="https://media.guap.ru/ {mediaCatalog} / {gallery.number.name} ?s=xl" title="{gallery.number.name}"><img class="gallery-list-item" src="https://media.guap.ru/ {mediaCatalog} / {gallery.number.name} ?s=xxl" alt="{gallery.number.name}"></a></li>
+      <li><a href="https://media.guap.ru/ {mediaCatalog} / {gallery.number.name} ?s=xl" title="{gallery.number.name}"><img class="gallery-list-item" src="https://media.guap.ru/ {mediaCatalog} / {gallery.number.name} ?s=xxl" alt="{gallery.number.name}"></a></li>
+      <li><a href="https://media.guap.ru/ {mediaCatalog} / {gallery.number.name} ?s=xl" title="{gallery.number.name}"><img class="gallery-list-item" src="https://media.guap.ru/ {mediaCatalog} / {gallery.number.name} ?s=xxl" alt="{gallery.number.name}"></a></li>
+      <li><a href="https://media.guap.ru/ {mediaCatalog} / {gallery.number.name} ?s=xl" title="{gallery.number.name}"><img class="gallery-list-item" src="https://media.guap.ru/ {mediaCatalog} / {gallery.number.name} ?s=xxl" alt="{gallery.number.name}"></a></li>
+      <li><a href="https://media.guap.ru/ {mediaCatalog} / {gallery.number.name} ?s=xl" title="{gallery.number.name}"><img class="gallery-list-item" src="https://media.guap.ru/ {mediaCatalog} / {gallery.number.name} ?s=xxl" alt="{gallery.number.name}"></a></li>
+      <li><a href="https://media.guap.ru/ {mediaCatalog} / {gallery.number.name} ?s=xl" title="{gallery.number.name}"><img class="gallery-list-item" src="https://media.guap.ru/ {mediaCatalog} / {gallery.number.name} ?s=xxl" alt="{gallery.number.name}"></a></li>
+      <li><a href="https://media.guap.ru/ {mediaCatalog} / {gallery.number.name} ?s=xl" title="{gallery.number.name}"><img class="gallery-list-item" src="https://media.guap.ru/ {mediaCatalog} / {gallery.number.name} ?s=xxl" alt="{gallery.number.name}"></a></li>
+      <li><a href="https://media.guap.ru/ {mediaCatalog} / {gallery.number.name} ?s=xl" title="{gallery.number.name}"><img class="gallery-list-item" src="https://media.guap.ru/ {mediaCatalog} / {gallery.number.name} ?s=xxl" alt="{gallery.number.name}"></a></li>
+      <li><a href="https://media.guap.ru/ {mediaCatalog} / {gallery.number.name} ?s=xl" title="{gallery.number.name}"><img class="gallery-list-item" src="https://media.guap.ru/ {mediaCatalog} / {gallery.number.name} ?s=xxl" alt="{gallery.number.name}"></a></li>
+      <li><a href="https://media.guap.ru/ {mediaCatalog} / {gallery.number.name} ?s=xl" title="{gallery.number.name}"><img class="gallery-list-item" src="https://media.guap.ru/ {mediaCatalog} / {gallery.number.name} ?s=xxl" alt="{gallery.number.name}"></a></li>
+   </ul>
+</div>
+```
+### Текст
+Внутри файла `kit/main.scss` описаны все стили, стилизующие все стандартные теги, встречающиеся внутри JSON'а новостей, поэтому необходимости в использовании каких-либо классов нет. Можно брать и вставлять в любую точку страницы текст и на выходе он будет стилизован так, как это необходимо.
+
+### Теги
+Стилизация: `kit/_links.scss`.
+```html
+<div class="tags">
+   <a href="https://new.guap.ru/pubs?nodes = {id}" class="link-tag">{nodes.title}</a>
+   <a href="https://new.guap.ru/pubs?nodes = {id}" class="link-tag">{nodes.shortTitle}</a>
+   <a href="https://new.guap.ru/pubs?categories = {id}" class="link-tag">{categories.title}</a>
+   <a href="https://new.guap.ru/pubs?categories = {id}" class="link-tag">{categories.title}</a>
+   <a href="https://new.guap.ru/pubs?targets = {id}" class="link-tag">{targets.title}</a>
+   <a href="https://new.guap.ru/pubs?tags = {id}" class="link-tag">{tags.title}</a>
+</div>
+```
+
+### Шапка
+#### Desktop меню
+Desktop меню немного отличается от меню для мобильных устойств тем, что уровней вложенности списков на один меньше, поскольку один уровень выходит прямо в шапку сайта для переключения между группами пунктов меню. Внутри самого списка пунктов меню всё реализовано обычным вложенным списком, где `.header-menu_title` — заголовок подгруппы внутри определённой категории, а содержимое `.header-menu_list.inner` элементы того самого меню.
+```html
+<nav class="header-menu" id="desktopMenuTabs">
+    <button class="btn-header active" id="desktopMenuTab-1">Университет</button>
+    <button class="btn-header" id="desktopMenuTab-2">Образование</button>
+    <button class="btn-header" id="desktopMenuTab-3">Наука</button>
+    <button class="btn-header" id="desktopMenuTab-4">Сотрудничество</button>
+    <button class="btn-header" id="desktopMenuTab-5">Вне учебы</button>
+</nav>
+
+...
+
+<ul class="header-menu_list wrapper active" id="desktopMenuNode-1">
+   <li class="header-menu_title">
+       О вузе
+       <ul class="header-menu_list inner">
+           <li><a href="#">Администрация</a></li>
+           <li><a href="#">Антимонопольный комплаенс</a></li>
+           <li><a href="#">Преподаватели</a></li>
+       </ul>
+   </li>
+   <li class="header-menu_title">
+       О вузе
+       <ul class="header-menu_list inner">
+           <li><a href="#">Администрация</a></li>
+           <li><a href="#">Антимонопольный комплаенс</a></li>
+           <li><a href="#">Преподаватели</a></li>
+       </ul>
+   </li>
+   <li class="header-menu_title">
+       О вузе
+       <ul class="header-menu_list inner">
+           <li><a href="#">Администрация</a></li>
+           <li><a href="#">Антимонопольный комплаенс</a></li>
+           <li><a href="#">Преподаватели</a></li>
+       </ul>
+   </li>
+</ul>
+```
+
+#### Mobile меню
+Меню для мобильных устойств отличается от Desktop тем, что уровень вложенности списков на один больше. <br>
+Пример того самого списка:
+```html
+<ul class="mobile-menu_list">
+   <li>Университет
+       <ul class="mobile-menu_list_inner">
+           <li class="mobile-menu_list_inner-next">О вузе
+               <ul class="mobile-menu_list_inner">
+                   <li><a href="#">Приветствие ректора</a></li>
+               </ul>
+           </li>
+           <li class="mobile-menu_list_inner-next">Институты и факультеты
+               <ul class="mobile-menu_list_inner">
+                   <li><a href="#">Институт аэрокосмических приборов и систем (институт 1)</a></li>
+                   <li><a href="#">Институт радиотехники и инфокоммуникационных технологий (институт 2)</a></li>
+                   <li><a href="#">Институт киберфизических систем (институт 3)</a></li>
+               </ul>
+           </li>
+       </ul>
+   </li>
+   <li>Университет
+       <ul class="mobile-menu_list_inner">
+           <li class="mobile-menu_list_inner-next">О вузе
+               <ul class="mobile-menu_list_inner">
+                   <li><a href="#">Приветствие ректора</a></li>
+               </ul>
+           </li>
+           <li class="mobile-menu_list_inner-next">Институты и факультеты
+               <ul class="mobile-menu_list_inner">
+                   <li><a href="#">Институт аэрокосмических приборов и систем (институт 1)</a></li>
+                   <li><a href="#">Институт радиотехники и инфокоммуникационных технологий (институт 2)</a></li>
+                   <li><a href="#">Институт киберфизических систем (институт 3)</a></li>
+               </ul>
+           </li>
+       </ul>
+   </li>
+</ul>
+```
