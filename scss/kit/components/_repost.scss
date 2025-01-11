@@ -1,0 +1,31 @@
+.repost {
+    display: inline-flex;
+    flex-direction: column;
+    gap: $sp-3x;
+    margin-bottom: $sp-6x;
+
+    @media (max-width: $breakpoint-md) {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+    }
+
+
+    &_link {
+        @extend .link-social;
+        background-color: $blue-100;
+        color: $white-main;
+        &:hover {
+            color: $white-main;
+            background-color: $blue-main;
+        }
+    
+        @media (max-width: $breakpoint-md) {
+            background-color: $blue-main;
+            font-size: $font-size-base;
+            &:hover {
+                background-color: $blue-300;
+            }
+        }
+    }
+}

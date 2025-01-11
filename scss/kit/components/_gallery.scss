@@ -1,0 +1,36 @@
+.gallery {
+    margin-bottom: $sp-4x;
+
+    &-first {
+        width: 100%;
+        border-radius: $rad-4x;
+    }
+    &-list {
+        list-style-type: none;
+        padding: 0px;
+        margin: 0px;
+        display: flex;
+        overflow-x: auto;
+        gap: 10px;
+
+        &-item {
+            border-radius: 4px;
+            height: 100px;
+            width: 100px;
+            -o-object-fit: cover;
+            object-fit: cover;
+        }
+    }
+}
+
+.blueimp-gallery {
+    background: rgba(0,0,0,0.8);
+}
+
+.blueimp-gallery-display>.next, .blueimp-gallery-display>.prev {
+    border: none;
+}
+
+.blueimp-gallery>.slides>.slide>.slide-content, .blueimp-gallery>.slides>.slide>.slide-content>img {
+    max-height: 80%;
+}

@@ -1,0 +1,37 @@
+.date {
+    font-weight: $font-weight-medium;
+    font-size: $font-size-base;
+    color: $black-500;
+    &.event {
+        color: $primary-guap;
+        &.now {
+            color: $secondary-guap;
+        }
+    }
+
+    &-inner {
+        &_wrapper {
+            display: inline;
+        }
+    }
+}
+
+
+@media screen and (min-width: ($breakpoint-md + 1px)) {
+    .date {
+        display: flex;
+        align-items: center;
+        gap: $sp-2x;
+        &-day {
+            font-size: 2.75em;
+            font-weight: $font-weight-bold;
+        }
+        &-inner {
+            &_wrapper {
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+            }
+        }
+    }
+}
